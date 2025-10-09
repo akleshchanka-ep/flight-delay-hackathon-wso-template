@@ -26,7 +26,7 @@ As a result, you're free to use frameworks and languages of your choosing. If yo
 
 ## Getting support
 
-With the open-ended nature of the workshop the mentors may not be able to help with every possible path. We've provided a couple of solutions which we would consider "official", and the ones the staff are most familiar with. However, as already stated, the primary goal is to explore GitHub Copilot. If you are attending an event, please don't be afraid to ask all the questions you might have!
+With the open-ended nature of the workshop the mentors may not be able to help with every possible path. We've provided a couple of solutions, that can be found [here](https://github.com/SolidifyDemo/flight-delay-hackathon-solutions), which we would consider "official", and the ones the staff are most familiar with. However, as already stated, the primary goal is to explore GitHub Copilot. If you are attending an event, please don't be afraid to ask all the questions you might have!
 
 ## Getting started
 
