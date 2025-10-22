@@ -1,0 +1,94 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Flight Delay Prediction - Home">
+  <div class="hero min-h-[60vh] bg-base-100 rounded-lg shadow-xl">
+    <div class="hero-content text-center">
+      <div class="max-w-2xl">
+        <h1 class="text-5xl font-bold mb-8">
+          ✈️ Flight Delay Predictor
+        </h1>
+        <p class="text-xl mb-8">
+          Predict the probability of flight delays using machine learning.
+          Choose your prediction mode and get instant results!
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+          <!-- Quick Predict Card -->
+          <div class="card bg-primary text-primary-content shadow-xl hover:shadow-2xl transition-shadow">
+            <div class="card-body">
+              <h2 class="card-title text-2xl justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Quick Predict
+              </h2>
+              <p class="text-base-100/80">
+                Get a fast prediction with default settings. Perfect for quick checks!
+              </p>
+              <div class="card-actions justify-center mt-4">
+                <a href="/predict" class="btn btn-secondary btn-lg">
+                  Start Quick Prediction
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Predict Card -->
+          <div class="card bg-accent text-accent-content shadow-xl hover:shadow-2xl transition-shadow">
+            <div class="card-body">
+              <h2 class="card-title text-2xl justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+                Custom Predict
+              </h2>
+              <p class="text-base-100/80">
+                Fine-tune your prediction with detailed options and parameters.
+              </p>
+              <div class="card-actions justify-center mt-4">
+                <a href="/custom" class="btn btn-secondary btn-lg">
+                  Customize Prediction
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+          <div class="card bg-base-100 shadow-lg">
+            <div class="card-body items-center text-center">
+              <div class="text-4xl mb-2">🤖</div>
+              <h3 class="card-title">ML Powered</h3>
+              <p>Advanced machine learning algorithms</p>
+            </div>
+          </div>
+          
+          <div class="card bg-base-100 shadow-lg">
+            <div class="card-body items-center text-center">
+              <div class="text-4xl mb-2">⚡</div>
+              <h3 class="card-title">Real-time</h3>
+              <p>Instant predictions at your fingertips</p>
+            </div>
+          </div>
+          
+          <div class="card bg-base-100 shadow-lg">
+            <div class="card-body items-center text-center">
+              <div class="text-4xl mb-2">📊</div>
+              <h3 class="card-title">Data-Driven</h3>
+              <p>Based on extensive flight data analysis</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

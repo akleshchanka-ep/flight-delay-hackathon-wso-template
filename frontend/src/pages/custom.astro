@@ -1,0 +1,492 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const API_BASE_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+---
+
+<Layout title="Custom Prediction - Flight Delay">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">Custom Flight Delay Prediction</h1>
+      <p class="text-lg text-base-content/70">
+        Advanced prediction with detailed options and multiple scenarios
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Input Form -->
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-2xl mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+            Flight Details
+          </h2>
+
+          <form id="custom-prediction-form">
+            <!-- Day of Week with Radio Buttons -->
+            <div class="form-control mb-6">
+              <label class="label">
+                <span class="label-text text-lg font-semibold">Day of Week</span>
+              </label>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="label cursor-pointer border rounded-lg p-3 hover:bg-base-200">
+                  <span class="label-text">Monday</span>
+                  <input type="radio" name="day_of_week" value="1" class="radio radio-primary" required />
+                </label>
+                <label class="label cursor-pointer border rounded-lg p-3 hover:bg-base-200">
+                  <span class="label-text">Tuesday</span>
+                  <input type="radio" name="day_of_week" value="2" class="radio radio-primary" />
+                </label>
+                <label class="label cursor-pointer border rounded-lg p-3 hover:bg-base-200">
+                  <span class="label-text">Wednesday</span>
+                  <input type="radio" name="day_of_week" value="3" class="radio radio-primary" />
+                </label>
+                <label class="label cursor-pointer border rounded-lg p-3 hover:bg-base-200">
+                  <span class="label-text">Thursday</span>
+                  <input type="radio" name="day_of_week" value="4" class="radio radio-primary" />
+                </label>
+                <label class="label cursor-pointer border rounded-lg p-3 hover:bg-base-200">
+                  <span class="label-text">Friday</span>
+                  <input type="radio" name="day_of_week" value="5" class="radio radio-primary" checked />
+                </label>
+                <label class="label cursor-pointer border rounded-lg p-3 hover:bg-base-200">
+                  <span class="label-text">Saturday</span>
+                  <input type="radio" name="day_of_week" value="6" class="radio radio-primary" />
+                </label>
+                <label class="label cursor-pointer border rounded-lg p-3 hover:bg-base-200 col-span-2">
+                  <span class="label-text">Sunday</span>
+                  <input type="radio" name="day_of_week" value="7" class="radio radio-primary" />
+                </label>
+              </div>
+            </div>
+
+            <!-- Origin Airport with Search -->
+            <div class="form-control mb-6">
+              <label class="label">
+                <span class="label-text text-lg font-semibold">Origin Airport</span>
+              </label>
+              <input 
+                type="text" 
+                id="origin-search" 
+                placeholder="Search origin airport..." 
+                class="input input-bordered w-full mb-2"
+              />
+              <select 
+                id="origin_airport" 
+                name="origin_airport_id" 
+                class="select select-bordered w-full"
+                size="5"
+                required
+              >
+                <option disabled selected>Loading airports...</option>
+              </select>
+            </div>
+
+            <!-- Destination Airport with Search -->
+            <div class="form-control mb-6">
+              <label class="label">
+                <span class="label-text text-lg font-semibold">Destination Airport</span>
+              </label>
+              <input 
+                type="text" 
+                id="dest-search" 
+                placeholder="Search destination airport..." 
+                class="input input-bordered w-full mb-2"
+              />
+              <select 
+                id="dest_airport" 
+                name="dest_airport_id" 
+                class="select select-bordered w-full"
+                size="5"
+                required
+              >
+                <option disabled selected>Loading airports...</option>
+              </select>
+            </div>
+
+            <!-- Batch Prediction Option -->
+            <div class="form-control mb-6">
+              <label class="label cursor-pointer">
+                <span class="label-text">Predict for entire week</span>
+                <input type="checkbox" id="batch-predict" class="checkbox checkbox-primary" />
+              </label>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-control">
+              <button 
+                type="submit" 
+                class="btn btn-primary btn-block"
+                id="custom-predict-btn"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                Analyze Flight
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Results Panel -->
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-2xl mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Prediction Results
+          </h2>
+
+          <!-- Loading State -->
+          <div id="custom-loading" class="hidden flex justify-center items-center min-h-[300px]">
+            <div class="text-center">
+              <span class="loading loading-spinner loading-lg text-primary"></span>
+              <p class="mt-4 text-lg">Analyzing flight patterns...</p>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div id="empty-state" class="flex flex-col justify-center items-center min-h-[300px] text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-base-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-base-content/70">
+              Select your flight details and click "Analyze Flight" to see predictions
+            </p>
+          </div>
+
+          <!-- Results Content -->
+          <div id="custom-results" class="hidden">
+            <div id="custom-result-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Prediction Results (for batch mode) -->
+    <div id="weekly-results" class="hidden mt-8">
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-2xl mb-4">Weekly Prediction Summary</h2>
+          <div id="weekly-content"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ API_BASE_URL }}>
+    let allAirports = [];
+
+    // Fetch and populate airports
+    async function loadAirports() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/airports?limit=1000`);
+        const data = await response.json();
+        allAirports = data.airports;
+        
+        populateAirportSelects(allAirports);
+      } catch (error) {
+        console.error('Error loading airports:', error);
+        document.getElementById('origin_airport').innerHTML = '<option disabled>Error loading airports</option>';
+        document.getElementById('dest_airport').innerHTML = '<option disabled>Error loading airports</option>';
+      }
+    }
+
+    function populateAirportSelects(airports) {
+      const originSelect = document.getElementById('origin_airport');
+      const destSelect = document.getElementById('dest_airport');
+      
+      originSelect.innerHTML = '';
+      destSelect.innerHTML = '';
+      
+      airports.forEach(airport => {
+        const optionText = `${airport.airport_name} (${airport.city}, ${airport.state})`;
+        
+        const originOption = document.createElement('option');
+        originOption.value = airport.airport_id;
+        originOption.textContent = optionText;
+        originOption.dataset.searchText = optionText.toLowerCase();
+        originSelect.appendChild(originOption);
+        
+        const destOption = document.createElement('option');
+        destOption.value = airport.airport_id;
+        destOption.textContent = optionText;
+        destOption.dataset.searchText = optionText.toLowerCase();
+        destSelect.appendChild(destOption);
+      });
+    }
+
+    // Search functionality
+    document.getElementById('origin-search').addEventListener('input', (e) => {
+      filterAirports('origin_airport', e.target.value);
+    });
+
+    document.getElementById('dest-search').addEventListener('input', (e) => {
+      filterAirports('dest_airport', e.target.value);
+    });
+
+    function filterAirports(selectId, searchTerm) {
+      const select = document.getElementById(selectId);
+      const options = select.querySelectorAll('option');
+      const term = searchTerm.toLowerCase();
+      
+      options.forEach(option => {
+        const searchText = option.dataset.searchText || '';
+        option.style.display = searchText.includes(term) ? '' : 'none';
+      });
+    }
+
+    // Handle form submission
+    document.getElementById('custom-prediction-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const form = e.target;
+      const formData = new FormData(form);
+      const batchPredict = document.getElementById('batch-predict').checked;
+      
+      const originId = parseInt(formData.get('origin_airport_id'));
+      const destId = parseInt(formData.get('dest_airport_id'));
+      const dayOfWeek = parseInt(formData.get('day_of_week'));
+      
+      // Show loading, hide empty state and results
+      document.getElementById('custom-loading').classList.remove('hidden');
+      document.getElementById('empty-state').classList.add('hidden');
+      document.getElementById('custom-results').classList.add('hidden');
+      document.getElementById('weekly-results').classList.add('hidden');
+      document.getElementById('custom-predict-btn').disabled = true;
+      
+      if (batchPredict) {
+        await makeBatchPrediction(originId, destId);
+      } else {
+        await makeSinglePrediction(dayOfWeek, originId, destId);
+      }
+      
+      document.getElementById('custom-loading').classList.add('hidden');
+      document.getElementById('custom-predict-btn').disabled = false;
+    });
+
+    async function makeSinglePrediction(dayOfWeek, originId, destId) {
+      const payload = {
+        day_of_week: dayOfWeek,
+        origin_airport_id: originId,
+        dest_airport_id: destId
+      };
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/predict`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          displaySingleResult(data);
+        } else {
+          displayError(data.error || 'Prediction failed');
+        }
+      } catch (error) {
+        console.error('Error making prediction:', error);
+        displayError('Failed to connect to prediction service');
+      }
+    }
+
+    async function makeBatchPrediction(originId, destId) {
+      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      const predictions = [];
+      
+      for (let day = 1; day <= 7; day++) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/predict`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              day_of_week: day,
+              origin_airport_id: originId,
+              dest_airport_id: destId
+            })
+          });
+          
+          const data = await response.json();
+          predictions.push({ day: days[day - 1], ...data });
+        } catch (error) {
+          console.error(`Error predicting day ${day}:`, error);
+          predictions.push({ day: days[day - 1], error: true });
+        }
+      }
+      
+      displayWeeklyResults(predictions);
+    }
+
+    function displaySingleResult(data) {
+      const delayPercentage = (data.delay_probability * 100).toFixed(1);
+      const confidencePercentage = (data.confidence * 100).toFixed(1);
+      const isDelayed = data.prediction === 'LIKELY DELAYED';
+      
+      const resultHTML = `
+        <div class="alert ${isDelayed ? 'alert-error' : 'alert-success'} mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            ${isDelayed 
+              ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />'
+              : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'
+            }
+          </svg>
+          <div>
+            <h3 class="font-bold">${data.prediction}</h3>
+            <div class="text-xs">${isDelayed ? 'Expect delays over 15 minutes' : 'Expect on-time arrival'}</div>
+          </div>
+        </div>
+        
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-semibold">Delay Probability</span>
+              <span class="text-sm font-bold">${delayPercentage}%</span>
+            </div>
+            <progress class="progress ${isDelayed ? 'progress-error' : 'progress-success'} w-full" value="${delayPercentage}" max="100"></progress>
+          </div>
+          
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-semibold">Confidence Level</span>
+              <span class="text-sm font-bold">${confidencePercentage}%</span>
+            </div>
+            <progress class="progress progress-info w-full" value="${confidencePercentage}" max="100"></progress>
+          </div>
+        </div>
+        
+        <div class="stats shadow w-full mt-4">
+          <div class="stat">
+            <div class="stat-title">Risk Level</div>
+            <div class="stat-value text-${isDelayed ? 'error' : 'success'} text-2xl">
+              ${delayPercentage > 50 ? 'High' : delayPercentage > 30 ? 'Medium' : 'Low'}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('custom-result-content').innerHTML = resultHTML;
+      document.getElementById('custom-results').classList.remove('hidden');
+    }
+
+    function displayWeeklyResults(predictions) {
+      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      
+      const tableHTML = `
+        <div class="overflow-x-auto">
+          <table class="table table-zebra w-full">
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Prediction</th>
+                <th>Delay Probability</th>
+                <th>Confidence</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${predictions.map(pred => {
+                if (pred.error) {
+                  return `<tr><td>${pred.day}</td><td colspan="4" class="text-error">Error</td></tr>`;
+                }
+                const delayPct = (pred.delay_probability * 100).toFixed(1);
+                const confidencePct = (pred.confidence * 100).toFixed(1);
+                const isDelayed = pred.prediction === 'LIKELY DELAYED';
+                
+                return `
+                  <tr>
+                    <td class="font-semibold">${pred.day}</td>
+                    <td><span class="badge ${isDelayed ? 'badge-error' : 'badge-success'}">${pred.prediction}</span></td>
+                    <td>
+                      <div class="flex items-center gap-2">
+                        <progress class="progress ${isDelayed ? 'progress-error' : 'progress-success'} w-20" value="${delayPct}" max="100"></progress>
+                        <span class="text-sm">${delayPct}%</span>
+                      </div>
+                    </td>
+                    <td>${confidencePct}%</td>
+                    <td>
+                      ${isDelayed 
+                        ? '<span class="badge badge-outline badge-error">⚠️ Caution</span>'
+                        : '<span class="badge badge-outline badge-success">✓ Clear</span>'
+                      }
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="mt-6 stats stats-vertical lg:stats-horizontal shadow w-full">
+          <div class="stat">
+            <div class="stat-title">Best Day</div>
+            <div class="stat-value text-success text-xl">
+              ${(() => {
+                const validPreds = predictions.filter(p => !p.error);
+                const best = validPreds.reduce((min, p) => 
+                  p.delay_probability < min.delay_probability ? p : min
+                , validPreds[0]);
+                return best.day;
+              })()}
+            </div>
+            <div class="stat-desc">Lowest delay risk</div>
+          </div>
+          
+          <div class="stat">
+            <div class="stat-title">Worst Day</div>
+            <div class="stat-value text-error text-xl">
+              ${(() => {
+                const validPreds = predictions.filter(p => !p.error);
+                const worst = validPreds.reduce((max, p) => 
+                  p.delay_probability > max.delay_probability ? p : max
+                , validPreds[0]);
+                return worst.day;
+              })()}
+            </div>
+            <div class="stat-desc">Highest delay risk</div>
+          </div>
+          
+          <div class="stat">
+            <div class="stat-title">Average Risk</div>
+            <div class="stat-value text-primary text-xl">
+              ${(() => {
+                const validPreds = predictions.filter(p => !p.error);
+                const avg = validPreds.reduce((sum, p) => sum + p.delay_probability, 0) / validPreds.length;
+                return (avg * 100).toFixed(1) + '%';
+              })()}
+            </div>
+            <div class="stat-desc">Weekly average</div>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('weekly-content').innerHTML = tableHTML;
+      document.getElementById('weekly-results').classList.remove('hidden');
+      
+      // Also show first day result in the side panel
+      displaySingleResult(predictions[0]);
+    }
+
+    function displayError(message) {
+      const errorHTML = `
+        <div class="alert alert-error">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>${message}</span>
+        </div>
+      `;
+      
+      document.getElementById('custom-result-content').innerHTML = errorHTML;
+      document.getElementById('custom-results').classList.remove('hidden');
+    }
+
+    // Load airports on page load
+    loadAirports();
+  </script>
+</Layout>

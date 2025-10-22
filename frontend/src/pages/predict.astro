@@ -1,0 +1,253 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const API_BASE_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+---
+
+<Layout title="Quick Prediction - Flight Delay">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">Quick Flight Delay Prediction</h1>
+      <p class="text-lg text-base-content/70">
+        Select your flight details to get an instant delay prediction
+      </p>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <form id="prediction-form">
+          <!-- Day of Week Selection -->
+          <div class="form-control mb-6">
+            <label class="label">
+              <span class="label-text text-lg font-semibold">Day of Week</span>
+            </label>
+            <select 
+              id="day_of_week" 
+              name="day_of_week" 
+              class="select select-bordered select-lg w-full"
+              required
+            >
+              <option disabled selected>Select a day</option>
+              <option value="1">Monday</option>
+              <option value="2">Tuesday</option>
+              <option value="3">Wednesday</option>
+              <option value="4">Thursday</option>
+              <option value="5">Friday</option>
+              <option value="6">Saturday</option>
+              <option value="7">Sunday</option>
+            </select>
+          </div>
+
+          <!-- Origin Airport Selection -->
+          <div class="form-control mb-6">
+            <label class="label">
+              <span class="label-text text-lg font-semibold">Origin Airport</span>
+            </label>
+            <select 
+              id="origin_airport" 
+              name="origin_airport_id" 
+              class="select select-bordered select-lg w-full"
+              required
+            >
+              <option disabled selected>Loading airports...</option>
+            </select>
+          </div>
+
+          <!-- Destination Airport Selection -->
+          <div class="form-control mb-6">
+            <label class="label">
+              <span class="label-text text-lg font-semibold">Destination Airport</span>
+            </label>
+            <select 
+              id="dest_airport" 
+              name="dest_airport_id" 
+              class="select select-bordered select-lg w-full"
+              required
+            >
+              <option disabled selected>Loading airports...</option>
+            </select>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="form-control mt-8">
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-lg w-full"
+              id="predict-btn"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+              Get Prediction
+            </button>
+          </div>
+        </form>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="hidden mt-8">
+          <div class="flex justify-center items-center">
+            <span class="loading loading-spinner loading-lg text-primary"></span>
+            <span class="ml-4 text-lg">Analyzing flight data...</span>
+          </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="hidden mt-8">
+          <div class="divider"></div>
+          <h2 class="text-2xl font-bold mb-4 text-center">Prediction Results</h2>
+          <div id="result-content"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ API_BASE_URL }}>
+    // Fetch and populate airports
+    async function loadAirports() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/airports?limit=1000`);
+        const data = await response.json();
+        
+        const originSelect = document.getElementById('origin_airport');
+        const destSelect = document.getElementById('dest_airport');
+        
+        // Clear loading options
+        originSelect.innerHTML = '<option disabled selected>Select origin airport</option>';
+        destSelect.innerHTML = '<option disabled selected>Select destination airport</option>';
+        
+        // Populate both selects with airports
+        data.airports.forEach(airport => {
+          const optionText = `${airport.airport_name} (${airport.city}, ${airport.state})`;
+          
+          const originOption = document.createElement('option');
+          originOption.value = airport.airport_id;
+          originOption.textContent = optionText;
+          originSelect.appendChild(originOption);
+          
+          const destOption = document.createElement('option');
+          destOption.value = airport.airport_id;
+          destOption.textContent = optionText;
+          destSelect.appendChild(destOption);
+        });
+      } catch (error) {
+        console.error('Error loading airports:', error);
+        const errorMsg = '<option disabled selected>Error loading airports</option>';
+        document.getElementById('origin_airport').innerHTML = errorMsg;
+        document.getElementById('dest_airport').innerHTML = errorMsg;
+      }
+    }
+
+    // Handle form submission
+    document.getElementById('prediction-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const form = e.target;
+      const formData = new FormData(form);
+      
+      const payload = {
+        day_of_week: parseInt(formData.get('day_of_week')),
+        origin_airport_id: parseInt(formData.get('origin_airport_id')),
+        dest_airport_id: parseInt(formData.get('dest_airport_id'))
+      };
+      
+      // Show loading, hide results
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('results').classList.add('hidden');
+      document.getElementById('predict-btn').disabled = true;
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/predict`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          displayResults(data);
+        } else {
+          displayError(data.error || 'Prediction failed');
+        }
+      } catch (error) {
+        console.error('Error making prediction:', error);
+        displayError('Failed to connect to prediction service');
+      } finally {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('predict-btn').disabled = false;
+      }
+    });
+
+    function displayResults(data) {
+      const delayPercentage = (data.delay_probability * 100).toFixed(1);
+      const confidencePercentage = (data.confidence * 100).toFixed(1);
+      const isDelayed = data.prediction === 'LIKELY DELAYED';
+      
+      const resultHTML = `
+        <div class="stats stats-vertical lg:stats-horizontal shadow w-full">
+          <div class="stat">
+            <div class="stat-figure text-${isDelayed ? 'error' : 'success'}">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                ${isDelayed 
+                  ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />'
+                  : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'
+                }
+              </svg>
+            </div>
+            <div class="stat-title">Prediction</div>
+            <div class="stat-value text-${isDelayed ? 'error' : 'success'}">${data.prediction}</div>
+            <div class="stat-desc">${isDelayed ? 'Expected delay >15 min' : 'Expected on-time arrival'}</div>
+          </div>
+          
+          <div class="stat">
+            <div class="stat-figure text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <div class="stat-title">Delay Probability</div>
+            <div class="stat-value text-primary">${delayPercentage}%</div>
+            <div class="stat-desc">Chance of delay</div>
+          </div>
+          
+          <div class="stat">
+            <div class="stat-figure text-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div class="stat-title">Confidence</div>
+            <div class="stat-value text-secondary">${confidencePercentage}%</div>
+            <div class="stat-desc">Model certainty</div>
+          </div>
+        </div>
+        
+        <div class="mt-6">
+          <progress class="progress progress-${isDelayed ? 'error' : 'success'} w-full" value="${delayPercentage}" max="100"></progress>
+        </div>
+      `;
+      
+      document.getElementById('result-content').innerHTML = resultHTML;
+      document.getElementById('results').classList.remove('hidden');
+    }
+
+    function displayError(message) {
+      const errorHTML = `
+        <div class="alert alert-error">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>${message}</span>
+        </div>
+      `;
+      
+      document.getElementById('result-content').innerHTML = errorHTML;
+      document.getElementById('results').classList.remove('hidden');
+    }
+
+    // Load airports on page load
+    loadAirports();
+  </script>
+</Layout>

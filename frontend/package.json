@@ -1,0 +1,20 @@
+{
+  "name": "frontend",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.15",
+    "astro": "^5.14.8",
+    "htmx.org": "^2.0.7"
+  },
+  "devDependencies": {
+    "daisyui": "^5.3.7",
+    "tailwindcss": "^4.1.15"
+  }
+}
