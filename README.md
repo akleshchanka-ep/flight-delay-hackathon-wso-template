@@ -41,28 +41,71 @@ Build an application which will allow someone to select the day of the week and 
 - Interactive documentation at `/docs`
 - Full testing suite included
 
-**Quick Start:**
+### ✅ Phase 3: Frontend - COMPLETE
+- Modern web UI built with Astro + TypeScript + DaisyUI 5
+- Three pages: Home, Quick Predict, Custom Predict
+- Advanced features:
+  - Airport search functionality
+  - Weekly batch predictions
+  - Visual analytics and comparisons
+- Full API integration
+- Responsive design for all devices
+
+## 🚀 Quick Start
+
+### Run Everything (Recommended)
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Start API server
-cd backend
-./run_server.sh
-
-# Access API at: http://localhost:8000
-# Interactive docs: http://localhost:8000/docs
+# Start both backend and frontend
+./run_fullstack.sh
 ```
 
-### 🚧 Phase 3: Frontend - TODO
-Create a user-friendly web interface for the API
+Then open:
+- **Frontend:** http://localhost:4321
+- **Backend API:** http://localhost:8000
+- **API Docs:** http://localhost:8000/docs
 
-## Documentation
+### Run Individually
+
+**Backend Only:**
+```bash
+cd backend
+./run_server.sh
+```
+
+**Frontend Only:**
+```bash
+cd frontend
+./run_frontend.sh
+```
+
+### First Time Setup
+
+1. **Install Python dependencies:**
+```bash
+pip install -r requirements.txt
+```
+
+2. **Create virtual environment (if needed):**
+```bash
+python3 -m venv flight_model_env
+source flight_model_env/bin/activate
+pip install -r requirements.txt
+```
+
+3. **Install frontend dependencies:**
+```bash
+cd frontend
+npm install
+```
+
+## 📚 Documentation
 
 - **[TODO.md](./TODO.md)** - Project roadmap and phase tracking
 - **[PHASE2_SUMMARY.md](./PHASE2_SUMMARY.md)** - Complete Phase 2 implementation details
+- **[PHASE3_SUMMARY.md](./PHASE3_SUMMARY.md)** - Complete Phase 3 implementation details
 - **[QUICKSTART_API.md](./QUICKSTART_API.md)** - Quick API reference guide
-- **[backend/README.md](./backend/README.md)** - Backend documentation
+- **[backend/README.md](./backend/README.md)** - Backend API documentation
+- **[frontend/README.md](./frontend/README.md)** - Frontend documentation
 - **[backend/openapi.yaml](./backend/openapi.yaml)** - API specification
 
 ## Requirements
@@ -71,7 +114,9 @@ This project is configured with a [devcontainer](./.devcontainer/devcontainer.js
 
 The project does assume you are familiar with programming, but is not prescriptive about language or framework choice.
 
-### Python Dependencies
+### Dependencies
+
+**Python (Backend):**
 ```
 pandas>=1.5.0
 numpy>=1.21.0
@@ -82,6 +127,40 @@ uvicorn[standard]>=0.24.0
 pydantic>=2.0.0
 requests>=2.31.0
 ```
+
+**Node.js (Frontend):**
+```
+astro@^5.14.8
+typescript
+tailwindcss@^4.1.15
+daisyui@^5.x
+htmx.org@^2.0.4
+```
+
+## 🎨 Features
+
+### Quick Prediction
+- Simple dropdown interface
+- Day of week selection
+- Origin and destination airports
+- Instant results with visual feedback
+
+### Custom Prediction
+- Advanced options
+- Radio button day selection
+- Airport search functionality
+- **Weekly Batch Mode:**
+  - Predict entire week at once
+  - Compare all days side-by-side
+  - Best/worst day recommendations
+  - Average weekly risk analysis
+
+### Modern UI
+- Built with DaisyUI 5 components
+- Responsive design (mobile/tablet/desktop)
+- Professional corporate theme
+- Loading states and error handling
+- Interactive visualizations
 
 ## 🤝 Contributing
 Contributions are warmly welcomed! ✨

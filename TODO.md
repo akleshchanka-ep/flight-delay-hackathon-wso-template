@@ -46,12 +46,38 @@ uvicorn main:app --reload
 API will be available at: http://localhost:8000
 Interactive docs at: http://localhost:8000/docs
 
-## Phase 3: Create a user-friendly frontend for the endpoint
+## Phase 3: Create a user-friendly frontend for the endpoint ✅ COMPLETED
 Let's finish the task wrapping up everything into nice Web UI.
 Technical requirements: TypeScipt based, server-side rendering using Astro + HTMX. Nice modern Web UI based on DaisyUI 5 framework. Put all fontend related code in `frontend` folder. 
 
 Here are the steps:
-0. create dedicated `/frontend` folder for the all front-end related code
-1. Check the server OpenAPI specification in `backend/openapi.yaml` file.
-2. Strat building fontend based on the API file
-3. From UI perspective we should have main screen with options for regular (default) prediction and for custome one with additional inputs. Those types of predicions might be places into different pages what available from mains screen.
+0. ✅ create dedicated `/frontend` folder for the all front-end related code
+1. ✅ Check the server OpenAPI specification in `backend/openapi.yaml` file.
+2. ✅ Strat building fontend based on the API file
+3. ✅ From UI perspective we should have main screen with options for regular (default) prediction and for custome one with additional inputs. Those types of predicions might be places into different pages what available from mains screen.
+4. ✅ Test ui.
+5. ✅ Create sh scripts to start the frontend and backend + frontend all togheter.
+
+**Phase 3 Implementation Summary:**
+- Created `/frontend` folder with complete Astro + TypeScript project
+- Implemented three pages:
+  - Home page (`/`) with navigation
+  - Quick Predict page (`/predict`) for simple predictions
+  - Custom Predict page (`/custom`) with advanced features including weekly batch predictions
+- Integrated with backend API:
+  - `GET /airports` for airport list
+  - `POST /predict` for delay predictions
+- Applied DaisyUI 5 components throughout
+- Created startup scripts:
+  - `frontend/run_frontend.sh` - Start frontend only
+  - `run_fullstack.sh` - Start both backend and frontend
+- Added comprehensive documentation in `frontend/README.md`
+
+**To run the complete application:**
+```bash
+./run_fullstack.sh
+```
+
+Frontend: http://localhost:4321
+Backend API: http://localhost:8000
+API Docs: http://localhost:8000/docs
