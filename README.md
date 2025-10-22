@@ -24,11 +24,64 @@ Build an application which will allow someone to select the day of the week and 
 
 > **[Start hacking!](./hackathon.md)**
 
+## Project Status
+
+### ✅ Phase 1: Model Creation - COMPLETE
+- Dataset loaded and cleaned from `data/flights.csv`
+- Machine learning model trained to predict delays >15 minutes
+- Model saved to `models/flight_delay_model.pkl`
+- Airport reference data created at `models/airports.csv`
+
+### ✅ Phase 2: API Development - COMPLETE
+- FastAPI REST API implemented in `backend/` folder
+- OpenAPI 3.0 specification created
+- Two main endpoints:
+  - `POST /predict` - Flight delay predictions
+  - `GET /airports` - Airport list retrieval
+- Interactive documentation at `/docs`
+- Full testing suite included
+
+**Quick Start:**
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Start API server
+cd backend
+./run_server.sh
+
+# Access API at: http://localhost:8000
+# Interactive docs: http://localhost:8000/docs
+```
+
+### 🚧 Phase 3: Frontend - TODO
+Create a user-friendly web interface for the API
+
+## Documentation
+
+- **[TODO.md](./TODO.md)** - Project roadmap and phase tracking
+- **[PHASE2_SUMMARY.md](./PHASE2_SUMMARY.md)** - Complete Phase 2 implementation details
+- **[QUICKSTART_API.md](./QUICKSTART_API.md)** - Quick API reference guide
+- **[backend/README.md](./backend/README.md)** - Backend documentation
+- **[backend/openapi.yaml](./backend/openapi.yaml)** - API specification
+
 ## Requirements
 
 This project is configured with a [devcontainer](./.devcontainer/devcontainer.json), which can be [run locally](https://code.visualstudio.com/docs/devcontainers/containers) or in a [codespace](https://github.com/features/codespaces). Please refer to the [setup exercise](./content/0-get-started.md) for more information.
 
 The project does assume you are familiar with programming, but is not prescriptive about language or framework choice.
+
+### Python Dependencies
+```
+pandas>=1.5.0
+numpy>=1.21.0
+scikit-learn>=1.1.0
+joblib>=1.2.0
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+requests>=2.31.0
+```
 
 ## 🤝 Contributing
 Contributions are warmly welcomed! ✨

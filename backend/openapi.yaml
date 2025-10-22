@@ -1,0 +1,218 @@
+openapi: 3.0.3
+info:
+  title: Flight Delay Prediction API
+  description: API for predicting flight delays and retrieving airport information
+  version: 1.0.0
+  contact:
+    name: Flight Delay Hackathon Team
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /predict:
+    post:
+      summary: Predict flight delay probability
+      description: Accepts day of week and airport IDs to predict the probability of a flight being delayed by more than 15 minutes
+      operationId: predictDelay
+      tags:
+        - Predictions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PredictionRequest'
+            example:
+              day_of_week: 5
+              origin_airport_id: 13930
+              dest_airport_id: 12892
+      responses:
+        '200':
+          description: Successful prediction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionResponse'
+              example:
+                delay_probability: 0.3245
+                confidence: 0.8912
+                prediction: "LIKELY ON TIME"
+        '400':
+          description: Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /airports:
+    get:
+      summary: Get list of airports
+      description: Returns a list of all airports sorted alphabetically by name, with their IDs
+      operationId: getAirports
+      tags:
+        - Airports
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of airports to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          description: Number of airports to skip for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirportsResponse'
+              example:
+                total: 350
+                airports:
+                  - airport_id: 10397
+                    airport_name: "Hartsfield-Jackson Atlanta International"
+                    city: "Atlanta"
+                    state: "GA"
+                  - airport_id: 13930
+                    airport_name: "Chicago O'Hare International"
+                    city: "Chicago"
+                    state: "IL"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the API
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  model_loaded:
+                    type: boolean
+                    example: true
+
+components:
+  schemas:
+    PredictionRequest:
+      type: object
+      required:
+        - day_of_week
+        - origin_airport_id
+        - dest_airport_id
+      properties:
+        day_of_week:
+          type: integer
+          minimum: 1
+          maximum: 7
+          description: Day of the week (1=Monday, 7=Sunday)
+          example: 5
+        origin_airport_id:
+          type: integer
+          description: ID of the origin airport
+          example: 13930
+        dest_airport_id:
+          type: integer
+          description: ID of the destination airport
+          example: 12892
+
+    PredictionResponse:
+      type: object
+      properties:
+        delay_probability:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Probability of flight being delayed by more than 15 minutes
+          example: 0.3245
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Confidence level of the prediction
+          example: 0.8912
+        prediction:
+          type: string
+          enum:
+            - "LIKELY DELAYED"
+            - "LIKELY ON TIME"
+          description: Human-readable prediction result
+          example: "LIKELY ON TIME"
+
+    Airport:
+      type: object
+      properties:
+        airport_id:
+          type: integer
+          description: Unique airport identifier
+          example: 13930
+        airport_name:
+          type: string
+          description: Full name of the airport
+          example: "Chicago O'Hare International"
+        city:
+          type: string
+          description: City where the airport is located
+          example: "Chicago"
+        state:
+          type: string
+          description: State code
+          example: "IL"
+
+    AirportsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of airports available
+          example: 350
+        airports:
+          type: array
+          items:
+            $ref: '#/components/schemas/Airport'
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Invalid day_of_week value"
+        detail:
+          type: string
+          description: Detailed error information
+          example: "day_of_week must be between 1 and 7"
